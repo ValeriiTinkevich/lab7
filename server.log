@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2024-05-27T17:01:04.028844600Z</date>
+  <millis>1716829264028</millis>
+  <nanos>844600</nanos>
+  <sequence>0</sequence>
+  <logger>server.Server</logger>
+  <level>SEVERE</level>
+  <class>server.databaseinteraction.DataBase</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>Connection established</message>
+</record>
+<record>
+  <date>2024-05-27T17:01:04.050825Z</date>
+  <millis>1716829264050</millis>
+  <nanos>825000</nanos>
+  <sequence>1</sequence>
+  <logger>server.Server</logger>
+  <level>INFO</level>
+  <class>server.utility.CollectionManager</class>
+  <method>loadCollection</method>
+  <thread>1</thread>
+  <message>Collection loaded successfully</message>
+</record>
+<record>
+  <date>2024-05-27T17:01:04.059780400Z</date>
+  <millis>1716829264059</millis>
+  <nanos>780400</nanos>
+  <sequence>2</sequence>
+  <logger>server.Server</logger>
+  <level>INFO</level>
+  <class>server.Server</class>
+  <method>openServerSocket</method>
+  <thread>1</thread>
+  <message>Starting the server...</message>
+</record>
+<record>
+  <date>2024-05-27T17:01:04.060283100Z</date>
+  <millis>1716829264060</millis>
+  <nanos>283100</nanos>
+  <sequence>3</sequence>
+  <logger>server.Server</logger>
+  <level>INFO</level>
+  <class>server.Server</class>
+  <method>openServerSocket</method>
+  <thread>1</thread>
+  <message>The server has been successfully started.</message>
+</record>
+<record>
+  <date>2024-05-27T17:01:04.061492900Z</date>
+  <millis>1716829264061</millis>
+  <nanos>492900</nanos>
+  <sequence>4</sequence>
+  <logger>server.Server</logger>
+  <level>INFO</level>
+  <class>server.Server</class>
+  <method>connectToClient</method>
+  <thread>1</thread>
+  <message>Listening port '64532'...</message>
+</record>
+<record>
+  <date>2024-05-27T17:02:04.073184300Z</date>
+  <millis>1716829324073</millis>
+  <nanos>184300</nanos>
+  <sequence>5</sequence>
+  <logger>server.Server</logger>
+  <level>WARNING</level>
+  <class>server.Server</class>
+  <method>connectToClient</method>
+  <thread>1</thread>
+  <message>Connection timeout exceeded!</message>
+</record>
+<record>
+  <date>2024-05-27T17:02:04.074249200Z</date>
+  <millis>1716829324074</millis>
+  <nanos>249200</nanos>
+  <sequence>6</sequence>
+  <logger>server.Server</logger>
+  <level>SEVERE</level>
+  <class>server.Server</class>
+  <method>launch</method>
+  <thread>1</thread>
+  <message>An error occurred while trying to terminate the connection with the client!</message>
+</record>
+</log>
