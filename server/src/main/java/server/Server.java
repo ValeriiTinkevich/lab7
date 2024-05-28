@@ -1,21 +1,14 @@
 package server;
 
-import common.data.User;
-import common.exceptions.ClosingSocketException;
-import common.exceptions.ConnectionErrorException;
-import common.exceptions.OpeningServerSocketException;
-import common.interaction.Request;
-import common.interaction.Response;
-import common.interaction.ResponseResult;
-import common.utility.Outputter;
-import server.utility.*;
+import server.utility.RequestHandler;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static server.App.logger;
 
@@ -23,159 +16,95 @@ public class Server {
 
     private final int port;
     private final int soTimeout;
-    private ServerSocket serverSocket;
-    private RequestHandler requestHandler;
-    public static HashSet<Integer> authorizedUsers;
+    private static final ExecutorService requestPool = Executors.newFixedThreadPool(10);
+    private static final ForkJoinPool responsePool = ForkJoinPool.commonPool();
+    private static final AtomicBoolean isRunning = new AtomicBoolean(true);
 
-    public Server(int port, int soTimeout, RequestHandler requestHandler) {
+    public Server(int port, int soTimeout) {
         this.port = port;
         this.soTimeout = soTimeout;
-        this.requestHandler = requestHandler;
-        authorizedUsers = new HashSet<Integer>();
     }
 
-    public static boolean addUser(Integer userID) {
-        return authorizedUsers.add(userID);
-    }
 
 
     public void launch() {
         try {
-            openServerSocket();
+        ServerSocket serverSocket = openServerSocket(port);
+        while (isRunning.get()) {
             try {
-                Socket clientSocket = connectToClient();
-                if (clientSocket != null) {
-                    logger.info("The server is running");
-                    Responser responser = new Responser(clientSocket, 10);
-                    CommandExecuter commandExecuter = new CommandExecuter(requestHandler, clientSocket, responser);
-                    commandExecuter.start();
-                    Receiver receiver = new Receiver(clientSocket, commandExecuter);
-                    receiver.setDaemon(true);
-                    receiver.start();
-                    shutDownHook();
-
+                Socket socket = acceptClientConnection(serverSocket);
+                if (socket != null) {
+                    handleClientConnection(socket);
                 }
-            } catch (ConnectionErrorException e) {
-                logger.severe("Connectionerror");
-            } catch (SocketTimeoutException e) {
-                Outputter.printError("An error occurred while trying to terminate the connection with the client!");
-                logger.severe("An error occurred while trying to terminate the connection with the client!");
+            } catch (IOException e) {
+                if (isRunning.get()) {
+                    logger.severe("Error accepting client connection: " + e.getMessage());
+                } else {
+                    logger.severe("Server is shutting down.");
+                }
             }
-        } catch (OpeningServerSocketException e) {
-            Outputter.printError("The server cannot be started!");
-            logger.severe("The server cannot be started!");
+        }
+        serverSocket.close();
+        requestPool.shutdown();
+        responsePool.shutdown();
+        stopServer();
+        shutDownHook();
+    } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public void run() {
-        try {
-            openServerSocket();
-            boolean processingStatus = true;
-            while(processingStatus) {
-                try(Socket clientSocket = connectToClient()) {
-                    processingStatus = processClientRequest(clientSocket);
-                } catch (ConnectionErrorException | SocketTimeoutException e) {
-                    break;
-                } catch (IOException e) {
-                    Outputter.printError("An error occurred while trying to terminate the connection with the client!");
-                    logger.severe("An error occurred while trying to terminate the connection with the client!");
-                }
-
-            }
-
-            stop();
-        } catch (OpeningServerSocketException e) {
-            Outputter.printError("The server cannot be started!");
-            logger.severe("The server cannot be started!");
-        }
+    private ServerSocket openServerSocket(int port) throws IOException {
+        logger.info("Starting the server...");
+        logger.info("Listening port '" + port + "'...");
+        ServerSocket serverSocket = new ServerSocket(port);
+        logger.info("The server has been successfully started.");
+        return serverSocket;
     }
+
+    private Socket acceptClientConnection(ServerSocket serverSocket) throws IOException {
+        if (!isRunning.get()) {
+            return null;
+        }
+        Socket socket = serverSocket.accept();
+        logger.info("Incoming connection from " + socket.getInetAddress());
+        return socket;
+    }
+
+    private void handleClientConnection(Socket socket) {
+        requestPool.execute(new RequestHandler(socket, responsePool));
+    }
+
+    public static void stopServer() {
+        logger.severe("Stopping the server...");
+        isRunning.set(false);
+        System.exit(0);
+    }
+
 
     /**
      * Open server socket.
      */
-    private void openServerSocket() throws OpeningServerSocketException {
-        try{
-            logger.info("Starting the server...");
-            serverSocket = new ServerSocket(port);
-            serverSocket.setSoTimeout(soTimeout);
-            logger.info("The server has been successfully started.");
-        } catch (IllegalArgumentException exception) {
-            Outputter.printError("Port '" + port + "' is beyond the limits of possible values!");
-            logger.severe("Port '" + port + "' is beyond the limits of possible values!");
-            throw new OpeningServerSocketException();
-        } catch (IOException exception) {
-            Outputter.printError("An error occurred while trying to use the port '" + port + "'!");
-            logger.severe("An error occurred while trying to use the port '" + port + "'!");
-            throw new OpeningServerSocketException();
-        }
-    }
 
-    private Socket connectToClient() throws ConnectionErrorException, SocketTimeoutException {
-        try{
-            Outputter.printLn("Listening port '" + port + "'...");
-            logger.info("Listening port '" + port + "'...");
-            Socket clientSocket = serverSocket.accept();
-            Outputter.printLn("The connection with the client has been successfully established.");
-            logger.info("The connection with the client has been successfully established.");
-            return clientSocket;
-        } catch (SocketTimeoutException exception) {
-            Outputter.printError("Connection timeout exceeded!");
-            logger.warning("Connection timeout exceeded!");
-            throw new SocketTimeoutException();
-        } catch (IOException exception) {
-            Outputter.printError("An error occurred while connecting to the client!");
-            logger.severe("An error occurred while connecting to the client!");
-            throw new ConnectionErrorException();
-        }
-    }
-
-    private boolean processClientRequest(Socket clientSocket) {
-        Request userRequest = null;
-        Response responseToUser;
-        try (ObjectInputStream clientReader = new ObjectInputStream(clientSocket.getInputStream());
-             ObjectOutputStream clientWriter = new ObjectOutputStream(clientSocket.getOutputStream())) {
-            do {
-                userRequest = (Request) clientReader.readObject();
-                responseToUser = requestHandler.handle(userRequest);
-                logger.info("Request '" + userRequest.getCommandName() + "' has been successfully processed.");
-                clientWriter.writeObject(responseToUser);
-                clientWriter.flush();
-            } while(responseToUser.getResponseResult() != ResponseResult.SERVER_EXIT);
-            return false;
-        } catch (ClassNotFoundException exception){
-            Outputter.printError("An error occurred while reading the received data!");
-            logger.severe("An error occurred while reading the received data!");
-
-        } catch (IOException exception) {
-            if (userRequest == null) {
-                Outputter.printError("Unexpected disconnection from the client!");
-                logger.warning("Unexpected disconnection from the client!");
-            } else {
-                Outputter.printLn("The client has been successfully disconnected from the server!");
-                logger.info("The client has been successfully disconnected from the server!");
-            }
-        }
-        return true;
-    }
 
     /**
      * Finishes server operation.
      */
-    private void stop() {
-        try{
-            logger.info("Shutting down the server...");
-            if(serverSocket == null) throw new ClosingSocketException();
-            serverSocket.close();
-            Outputter.printLn("The server operation has been successfully completed.");
-        } catch (ClosingSocketException exception) {
-            Outputter.printError("It is impossible to shut down a server that has not yet started!");
-            logger.severe("It is impossible to shut down a server that has not yet started!");
-        } catch (IOException exception) {
-            Outputter.printError("An error occurred when shutting down the server!");
-            logger.severe("An error occurred when shutting down the server!");
-        }
-    }
+//    public static void stop() {
+//        try{
+//            logger.info("Shutting down the server...");
+//            if(serverSocket == null) throw new ClosingSocketException();
+//            serverSocket.close();
+//            Outputter.printLn("The server operation has been successfully completed.");
+//        } catch (ClosingSocketException exception) {
+//            Outputter.printError("It is impossible to shut down a server that has not yet started!");
+//            logger.severe("It is impossible to shut down a server that has not yet started!");
+//        } catch (IOException exception) {
+//            Outputter.printError("An error occurred when shutting down the server!");
+//            logger.severe("An error occurred when shutting down the server!");
+//        }
+//    }
 
     private void shutDownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> logger.info("The server is stopped")));

@@ -22,6 +22,7 @@ tasks.register<Jar>("fatJar") {
     archiveBaseName.set("${project.name}-all")
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     with(tasks.jar.get())
+    destinationDirectory.set(file("C:/Users/User/Desktop/lab7out"))
 }
 
 tasks.test {

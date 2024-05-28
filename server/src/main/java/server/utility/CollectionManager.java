@@ -18,20 +18,16 @@ public class CollectionManager {
     private LocalDateTime lastInitTime;
     private LocalDateTime lastSaveTime;
     private final ZonedDateTime creationDate;
-    private FileManager collectionFileManager;
 
 
     /**
      * Collection manager constructor.
      */
-    public CollectionManager(FileManager fileManager) {
+    public CollectionManager() {
         this.lastInitTime = null;
         this.lastSaveTime = null;
         spaceMarineCollection = new LinkedList<>();
         creationDate = ZonedDateTime.now();
-        this.collectionFileManager = fileManager;
-
-        loadCollection();
     }
 
     /**
@@ -135,24 +131,6 @@ public class CollectionManager {
      */
     public void removeAtIndex(int index) {
         spaceMarineCollection.remove(index);
-    }
-
-    /**
-     * Saves the collection to file.
-     */
-    public void saveCollection() {
-        collectionFileManager.saveCollection(spaceMarineCollection);
-        lastSaveTime = LocalDateTime.now();
-        App.logger.info("Collection saved successfully");
-    }
-
-    /**
-     * Loads the collection from file.
-     */
-    private void loadCollection() {
-        spaceMarineCollection = collectionFileManager.readCollection();
-        lastInitTime = LocalDateTime.now();
-        App.logger.info("Collection loaded successfully");
     }
 }
 

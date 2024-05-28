@@ -1,17 +1,10 @@
 package client;
 
-import client.utility.AuthInputManager;
 import client.utility.UserHandler;
-import common.exceptions.ConnectionErrorException;
-import common.exceptions.IncorrectInputInScriptException;
 import common.exceptions.NotInDeclaredLimitsException;
 import common.exceptions.WrongAmountOfArgumentsException;
 import common.utility.Outputter;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.util.Scanner;
 
 public class App {
@@ -46,13 +39,13 @@ public class App {
     }
 
 
-    public static void main(String[] args) throws IncorrectInputInScriptException, IOException {
+    public static void main(String[] args) throws InterruptedException {
         //if (!initializeConnectionAddress(args)) return;
         host = "localhost";
         port = 64532;
         Scanner userScanner = new Scanner(System.in);
         UserHandler userHandler = new UserHandler(userScanner);
-        Client client = new Client(userHandler, port, RECONNECTION_TIMEOUT, MAX_RECONNECTION_ATTEMPTS, host);
+        Client client = new Client(userHandler, port, MAX_RECONNECTION_ATTEMPTS, host);
         client.run();
         userScanner.close();
     }

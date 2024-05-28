@@ -6,18 +6,17 @@ import server.databaseinteraction.DataBase;
 import java.util.*;
 
 public class CommandManager {
-    public final Map<String, ICommand> commands;
+    public static final Map<String, ICommand> commands = new HashMap<>();
     CollectionManager collectionManager;
     private final int COMMAND_HISTORY_SIZE = 8;
     private final DataBase dataBase;
 
-    private LinkedList<String> commandHistory;
+    private static LinkedList<String> commandHistory;
 
     public CommandManager (CollectionManager collectionManager, DataBase dataBase) {
         commandHistory = new LinkedList<String>();
         this.collectionManager = collectionManager;
         this.dataBase = dataBase;
-        commands = new HashMap<>();
         commands.put("help", new HelpCommand(this.commands));
         commands.put("info", new InfoCommand(this.collectionManager));
         commands.put("add", new AddElementCommand(this.collectionManager));
@@ -37,9 +36,13 @@ public class CommandManager {
 
     }
 
-    public void addToHistory(String CommandName) {
+    public static void addToHistory(String CommandName) {
         commandHistory.addFirst(CommandName);
         if (commandHistory.size() > 5) commandHistory.pollLast();
+    }
+
+    public static ICommand getCommand(String commandName) {
+        return commands.get(commandName.toLowerCase());
     }
 
 

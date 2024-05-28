@@ -1,15 +1,11 @@
 package server;
 
-import common.utility.Outputter;
 import server.databaseinteraction.DataBase;
 import server.utility.CollectionManager;
 import server.utility.CommandManager;
-import server.utility.FileManager;
 import server.utility.RequestHandler;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.sql.SQLException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
@@ -26,17 +22,14 @@ public class App {
         FileHandler fh;
         fh = new FileHandler("server.log");
         logger.addHandler(fh);
+        CollectionManager collectionManager = new CollectionManager();
         ConsoleHandler consoleHandler = new ConsoleHandler();
         logger.setUseParentHandlers(false);
         consoleHandler.setEncoding("UTF-8");
         logger.addHandler(consoleHandler);
         DataBase dataBase = new DataBase("postgres", "admin123");
-        String fileName = "data.csv";
-        FileManager fileManager = new FileManager(fileName, ";");
-        CollectionManager collectionManager = new CollectionManager(fileManager);
         CommandManager commandManager = new CommandManager(collectionManager, dataBase);
-        RequestHandler requestHandler = new RequestHandler(commandManager);
-        Server server = new Server(PORT, connectionTimeout, requestHandler);
+        Server server = new Server(PORT, connectionTimeout);
 
         server.launch();
 

@@ -9,7 +9,6 @@ import common.exceptions.CommandUsageException;
 import common.exceptions.IncorrectInputInScriptException;
 import common.exceptions.ScriptRecursionException;
 import common.interaction.Request;
-import common.interaction.ResponseResult;
 import common.utility.Outputter;
 
 import java.io.File;
@@ -27,25 +26,22 @@ public class UserHandler {
         this.userScanner = userScanner;
     }
 
-    public Request handle(ResponseResult serverResponseResult) {
+    public Request handle() {
         String userInput;
         String[] userCommand;
         ProcessingResult processingResult;
         int rewriteAttempts = 0;
-        try{
-            do{
-                try{
-                    if(fileMode() && (serverResponseResult == ResponseResult.ERROR ||
-                            serverResponseResult == ResponseResult.SERVER_EXIT))
-                        throw new IncorrectInputInScriptException();
-                    while(fileMode() && !userScanner.hasNextLine()){
+        try {
+            do {
+                try {
+                    while (fileMode() && !userScanner.hasNextLine()) {
                         userScanner.close();
                         userScanner = scannerStack.pop();
                         Outputter.printLn("Going back to the script '" + scriptStack.pop().getName() + "'...");
                     }
-                    if(fileMode()){
+                    if (fileMode()) {
                         userInput = userScanner.nextLine();
-                        if(!userInput.isEmpty()){
+                        if (!userInput.isEmpty()) {
                             Outputter.print(App.PS1);
                             Outputter.printLn(userInput);
                         }
@@ -68,10 +64,8 @@ public class UserHandler {
                 }
                 processingResult = processCommand(userCommand[0], userCommand[1]);
             } while (processingResult == ProcessingResult.ERROR && !fileMode() || userCommand[0].isEmpty());
-            try{
-                if(fileMode() && (serverResponseResult == ResponseResult.ERROR || processingResult == ProcessingResult.ERROR))
-                    throw new IncorrectInputInScriptException();
-                switch (processingResult){
+            try {
+                switch (processingResult) {
                     case NEWUSER:
                         User user = generateNewUser();
                         Outputter.printLn(user.getUsername() + " " + user.getPassword());
@@ -87,8 +81,8 @@ public class UserHandler {
                         return new Request(userCommand[0], spaceMarine, Client.userID);
                     case SCRIPT:
                         File scriptFile = new File(userCommand[1]);
-                        if(!scriptFile.exists()) throw new FileNotFoundException();
-                        if(!scriptStack.isEmpty() && scriptStack.search(scriptFile) != -1)
+                        if (!scriptFile.exists()) throw new FileNotFoundException();
+                        if (!scriptStack.isEmpty() && scriptStack.search(scriptFile) != -1)
                             throw new ScriptRecursionException();
                         scannerStack.push(userScanner);
                         scriptStack.push(scriptFile);
@@ -96,13 +90,13 @@ public class UserHandler {
                         Outputter.printLn("Execute script '" + scriptFile.getName() + "'...");
                         break;
                 }
-            } catch (FileNotFoundException exception){
+            } catch (FileNotFoundException exception) {
                 Outputter.printError("The script file was not found!");
-            } catch (ScriptRecursionException exception){
+            } catch (ScriptRecursionException exception) {
                 Outputter.printError("Scripts cannot be called recursively!");
                 throw new IncorrectInputInScriptException();
             }
-        } catch (IncorrectInputInScriptException exception){
+        } catch (IncorrectInputInScriptException exception) {
             Outputter.printError("Script execution aborted!");
             while (!scannerStack.isEmpty()) {
                 userScanner.close();
@@ -115,8 +109,8 @@ public class UserHandler {
     }
 
     private ProcessingResult processCommand(String command, String commandArgument) {
-        try{
-            switch (command){
+        try {
+            switch (command) {
                 case "":
                     return ProcessingResult.ERROR;
                 case "remove_greater":
@@ -125,7 +119,6 @@ public class UserHandler {
                     if (!commandArgument.isEmpty()) throw new CommandUsageException("{element}");
                     return ProcessingResult.OBJECT;
                 case "exit":
-                    System.exit(0);
                 case "help":
                 case "info":
                 case "print_unique_heart_count":
@@ -158,7 +151,7 @@ public class UserHandler {
                     Outputter.printLn("Command '" + command + "' was not found. Type 'help' for help.");
                     return ProcessingResult.ERROR;
             }
-        } catch (CommandUsageException exception){
+        } catch (CommandUsageException exception) {
             if (exception.getMessage() != null) command += " " + exception.getMessage();
             Outputter.printLn("Usage: '" + command + "'");
             return ProcessingResult.ERROR;
@@ -168,7 +161,7 @@ public class UserHandler {
 
     private SpaceMarine generateSpaceMarine() throws IncorrectInputInScriptException {
         SpaceMarineInputManager spaceMarineInputManager = new SpaceMarineInputManager(userScanner);
-        if(fileMode()) spaceMarineInputManager.setScriptMode();
+        if (fileMode()) spaceMarineInputManager.setScriptMode();
         return new SpaceMarine(
                 spaceMarineInputManager.setId(),
                 spaceMarineInputManager.askName(),
@@ -184,7 +177,7 @@ public class UserHandler {
 
     private Chapter generateChapter() throws IncorrectInputInScriptException {
         SpaceMarineInputManager spaceMarineInputManager = new SpaceMarineInputManager(userScanner);
-        if(fileMode()) spaceMarineInputManager.setScriptMode();
+        if (fileMode()) spaceMarineInputManager.setScriptMode();
         return spaceMarineInputManager.askChapter();
     }
 
