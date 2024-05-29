@@ -7,5 +7,6 @@ public enum ProcessingResult {
     CHAPTER,
     SCRIPT,
     USER,
-    NEWUSER
+    NEWUSER,
+    UPDATE
 }

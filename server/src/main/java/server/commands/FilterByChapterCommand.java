@@ -7,6 +7,7 @@ import common.data.User;
 import common.exceptions.NotAuthorizedException;
 import common.exceptions.WrongAmountOfArgumentsException;
 import common.utility.Outputter;
+import server.databaseinteraction.DataBase;
 import server.utility.CollectionManager;
 import server.utility.ResponseOutputter;
 
@@ -17,14 +18,16 @@ import java.io.Serializable;
  */
 public class FilterByChapterCommand extends AbstractCommand{
     CollectionManager collectionManager;
+    DataBase dataBase;
 
     /**
      * Filter_by_chapter command constructor.
      * @param collectionManager Collection manager for filter_by_chapter command.
      */
-    public FilterByChapterCommand(CollectionManager collectionManager) {
+    public FilterByChapterCommand(CollectionManager collectionManager, DataBase dataBase) {
         super("filter_by_chapter", "Shows elements with chapter == input");
         this.collectionManager = collectionManager;
+        this.dataBase = dataBase;
     }
 
 
@@ -42,7 +45,7 @@ public class FilterByChapterCommand extends AbstractCommand{
             Chapter askedChapter = (Chapter) argument;
             for(SpaceMarine spaceMarine: collectionManager.getSpaceMarineCollection()) {
                 if (spaceMarine.getChapter().equals(askedChapter)) {
-                    ResponseOutputter.appendLn(spaceMarine.toString() + "\n===============");
+                    ResponseOutputter.appendLn(spaceMarine + "\n===============");
                 }
             }
             return true;

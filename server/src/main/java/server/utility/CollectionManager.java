@@ -6,6 +6,7 @@ import server.App;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -123,6 +124,11 @@ public class CollectionManager {
                 .filter(organization -> organization.getId() == id)
                 .findFirst()
                 .ifPresent(this::removeFromCollection);
+    }
+
+    public void updateCollection(LinkedList<SpaceMarine> collection){
+        this.spaceMarineCollection = collection;
+        App.logger.info("Collection updated successfully!");
     }
 
     /**

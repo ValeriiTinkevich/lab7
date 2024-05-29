@@ -9,6 +9,7 @@ import common.exceptions.CommandUsageException;
 import common.exceptions.IncorrectInputInScriptException;
 import common.exceptions.ScriptRecursionException;
 import common.interaction.Request;
+import common.interaction.UpdateRequest;
 import common.utility.Outputter;
 
 import java.io.File;
@@ -89,6 +90,10 @@ public class UserHandler {
                         userScanner = new Scanner(scriptFile);
                         Outputter.printLn("Execute script '" + scriptFile.getName() + "'...");
                         break;
+                    case UPDATE:
+                        SpaceMarine spaceMarine1 = generateSpaceMarine();
+                        return new UpdateRequest(userCommand[0], spaceMarine1,
+                                Client.userID, userCommand[1]);
                 }
             } catch (FileNotFoundException exception) {
                 Outputter.printError("The script file was not found!");
@@ -142,7 +147,7 @@ public class UserHandler {
                 case "remove_by_id":
                 case "update":
                     if (commandArgument.isEmpty()) throw new CommandUsageException("<ID>");
-                    break;
+                    return ProcessingResult.UPDATE;
                 case "register":
                     return ProcessingResult.NEWUSER;
                 case "auth":
@@ -171,7 +176,8 @@ public class UserHandler {
                 spaceMarineInputManager.askHeartCount(),
                 spaceMarineInputManager.askHeight(),
                 spaceMarineInputManager.askMeleeWeapon(),
-                spaceMarineInputManager.askChapter()
+                spaceMarineInputManager.askChapter(),
+                Client.userID
         );
     }
 

@@ -48,6 +48,8 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
      */
     private Chapter chapter; //Поле не может быть null
 
+    private int createdByUser;
+
     /**
      * Id setter.
      * @param id Id
@@ -132,16 +134,17 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
      * @param meleeWeapon Melee Weapon
      * @param chapter Chapter
      */
-    public SpaceMarine(Long id, String name, Coordinates coordinates, ZonedDateTime creationDate, Integer health, long heartCount, Long height, MeleeWeapon meleeWeapon, Chapter chapter) {
+    public SpaceMarine(Long id, String name, Coordinates coordinates, ZonedDateTime creationDate, Integer health, long heartCount, Long height, MeleeWeapon meleeWeapon, Chapter chapter, int createdByUser) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
-        this.creationDate = ZonedDateTime.now();
+        this.creationDate = creationDate;
         this.health = health;
         this.heartCount = heartCount;
         this.height = height;
         this.meleeWeapon = meleeWeapon;
         this.chapter = chapter;
+        this.createdByUser = createdByUser;
     }
 
     /**

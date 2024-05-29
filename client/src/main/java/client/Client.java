@@ -12,11 +12,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import static java.lang.Thread.sleep;
+
 public class Client {
     private final String host;
     private final int port;
     private int reconnectionAttempts;
-    private Socket socket;
     private final UserHandler userHandler;
     public static int userID = -1;
 
@@ -31,14 +32,14 @@ public class Client {
     public void run() throws InterruptedException {
         while (reconnectionAttempts > 0) {
             Outputter.printLn("Trying to connect to the server");
-            Thread.sleep(10000);
+            sleep(5000);
             try (Socket socket = new Socket(host, port);
                  ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
                  ObjectInputStream input = new ObjectInputStream(socket.getInputStream())) {
 
                 Outputter.printLn("Connected to the server. Enter commands:");
 
-                while (true) {
+                do {
                     System.out.print("> ");
                     Request request = userHandler.handle();
                     output.writeObject(request);
@@ -46,7 +47,7 @@ public class Client {
                     Response response = (Response) input.readObject();
                     if (response instanceof ResponseAuth) Client.userID = ((ResponseAuth) response).getUserID();
                     Outputter.printLn("Received response: " + response.getResponseBody() + "\n" + response.getResponseResult());
-                }
+                } while (true);
             } catch (EOFException e) {
                 Outputter.printError("Connection closed by server.");
                 break;

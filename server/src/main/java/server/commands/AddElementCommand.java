@@ -3,31 +3,31 @@ package server.commands;
 
 
 import common.data.SpaceMarine;
-import common.data.User;
-import common.exceptions.IncorrectInputInScriptException;
+import common.exceptions.DataBaseNotUpdatedException;
 import common.exceptions.NotAuthorizedException;
 import common.exceptions.WrongAmountOfArgumentsException;
-import common.utility.Outputter;
-import server.Server;
 import server.databaseinteraction.DataBase;
 import server.utility.CollectionManager;
 import server.utility.ResponseOutputter;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 /**
  * Command for adding an element to collection from user input.
  */
 public class AddElementCommand extends AbstractCommand{
     private final CollectionManager collectionManager;
+    private final DataBase dataBase;
 
     /**
      * Add command constructor.
      * @param collectionManager Collection manager for add command.
      */
-    public AddElementCommand(CollectionManager collectionManager) {
+    public AddElementCommand(CollectionManager collectionManager, DataBase dataBase) {
         super("add", "Adds and element to collection");
         this.collectionManager = collectionManager;
+        this.dataBase = dataBase;
     }
 
     /**
@@ -42,14 +42,14 @@ public class AddElementCommand extends AbstractCommand{
             if (user == -1) throw new NotAuthorizedException();
             if (!(argument instanceof SpaceMarine)) throw new WrongAmountOfArgumentsException();
             SpaceMarine smArg = (SpaceMarine) argument;
-            smArg.setId(collectionManager.generateNewIdForCollection());
-            collectionManager.addToCollection((SpaceMarine) argument);
+            dataBase.insert(smArg, user);
+            collectionManager.updateCollection(dataBase.selectCollection());
             ResponseOutputter.appendLn("Space marine was added successfully!");
             return true;
         } catch (WrongAmountOfArgumentsException e) {
             ResponseOutputter.appendLn(e.getMessage());
             return false;
-        } catch (NotAuthorizedException e) {
+        } catch (NotAuthorizedException | SQLException | DataBaseNotUpdatedException e) {
             ResponseOutputter.appendError(e.getMessage());
         }
         return false;

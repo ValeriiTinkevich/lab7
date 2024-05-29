@@ -1,12 +1,10 @@
 package server.utility;
 
-import common.interaction.Request;
-import common.interaction.Response;
-import common.interaction.ResponseAuth;
-import common.interaction.ResponseResult;
+import common.interaction.*;
 import server.Server;
 import server.commands.AuthCommand;
 import server.commands.ICommand;
+import server.commands.UpdateByIdCommand;
 
 import java.io.*;
 import java.net.Socket;
@@ -45,6 +43,13 @@ public class RequestHandler implements Runnable {
         return authCommand.executeAuth(commandArgument);
     }
 
+    public boolean executeUpdate(String commandName, Serializable spaceMarineId, Serializable spaceMarine, int UID ){
+        ICommand command = CommandManager.getCommand(commandName);
+        UpdateByIdCommand updateByIdCommand = (UpdateByIdCommand) command;
+        return updateByIdCommand.execute(UID, spaceMarineId, spaceMarine);
+
+    }
+
 
     @Override
     public void run() {
@@ -57,15 +62,32 @@ public class RequestHandler implements Runnable {
                     Response response = null;
                     Request request = (Request) input.readObject();
                     logger.info("Received request: " + request.getCommandName());
-                    if (request.getCommandName().equals("exit")){
-                        response = new Response(ResponseResult.SERVER_EXIT, ResponseOutputter.getAndClear());
-                        Server.stopServer();
-                    } else {
-                        if (request.getCommandName().equals("auth")){
+
+
+                    switch (request.getCommandName()) {
+                        case "exit" -> {
+                            response = new Response(ResponseResult.SERVER_EXIT, ResponseOutputter.getAndClear());
+                            Server.stopServer();
+                        }
+                        case "auth" -> {
                             int userIDAuth = executeAuth("auth", request.getCommandArgument(), request.getUserID());
-                            if (userIDAuth != -1) response = new ResponseAuth(ResponseResult.AUTH, ResponseOutputter.getAndClear(), userIDAuth);
-                            else response = new ResponseAuth(ResponseResult.ERROR, ResponseOutputter.getAndClear(), userIDAuth);
-                        } else {
+                            if (userIDAuth != -1)
+                                response = new ResponseAuth(ResponseResult.AUTH, ResponseOutputter.getAndClear(), userIDAuth);
+                            else
+                                response = new ResponseAuth(ResponseResult.ERROR, ResponseOutputter.getAndClear(), userIDAuth);
+                        }
+                        case "update" -> {
+                            if(request instanceof UpdateRequest) {
+                                UpdateRequest updateRequest = (UpdateRequest) request;
+                                if (executeUpdate(updateRequest.getCommandName(),
+                                        updateRequest.getId(),
+                                        updateRequest.getCommandArgument(),
+                                        request.getUserID())) {
+                                    response = new Response(ResponseResult.OK, ResponseOutputter.getAndClear());
+                                } else response = new Response(ResponseResult.ERROR, ResponseOutputter.getAndClear());
+                            }
+                        }
+                        default -> {
                             ResponseResult responseResult = executeCommand(
                                     request.getCommandName(),
                                     request.getCommandArgument(), request.getUserID());
@@ -77,7 +99,7 @@ public class RequestHandler implements Runnable {
                         try {
                             output.writeObject(finalResponse);
                             output.flush(); // Ensure the data is sent
-                            System.out.println("Sent response: " + finalResponse.getResponseResult() + "for " + request.getCommandName());
+                            System.out.println("Sent response: " + finalResponse.getResponseResult() + " for " + request.getCommandName());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
