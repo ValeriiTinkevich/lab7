@@ -4,26 +4,31 @@ package server.commands;
 import common.data.SpaceMarine;
 import common.data.User;
 import common.exceptions.NotAuthorizedException;
+import common.exceptions.UserNotFoundException;
 import common.exceptions.WrongAmountOfArgumentsException;
 import common.utility.Outputter;
+import server.databaseinteraction.DataBase;
 import server.utility.CollectionManager;
 import server.utility.ResponseOutputter;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 /**
  * Command that displays collection elements for user.
  */
 public class ShowCommand extends AbstractCommand {
     CollectionManager collectionManager;
+    DataBase dataBase;
 
     /**
      * Show command constructor.
      * @param collectionManager Collection manager for show command.
      */
-    public ShowCommand(CollectionManager collectionManager) {
+    public ShowCommand(CollectionManager collectionManager, DataBase dataBase) {
         super("show", "Displays collection elements as Strings");
         this.collectionManager = collectionManager;
+        this.dataBase = dataBase;
     }
     /**
      * Displays collection.
@@ -40,14 +45,15 @@ public class ShowCommand extends AbstractCommand {
                 ResponseOutputter.appendLn("Collection is empty.");
             } else {
                 for (SpaceMarine spaceMarine : collectionManager.getSpaceMarineCollection()) {
-                    ResponseOutputter.appendLn(spaceMarine.toString() + "\n===============");
+                    ResponseOutputter.appendLn(spaceMarine.toString() + "\nOwner: " +
+                            dataBase.selectUsername(spaceMarine.getCreatedByUser())+ "\n===============");
 
                 }
             }
             return true;
         } catch (WrongAmountOfArgumentsException e) {
             ResponseOutputter.appendLn(e.getMessage());
-        } catch (NotAuthorizedException e) {
+        } catch (NotAuthorizedException | SQLException | UserNotFoundException e) {
             ResponseOutputter.appendError(e.getMessage());
         }
         return false;

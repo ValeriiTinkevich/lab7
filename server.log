@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2024-05-29T14:13:51.708818100Z</date>
-  <millis>1716992031708</millis>
-  <nanos>818100</nanos>
+  <date>2024-06-06T14:00:32.434100200Z</date>
+  <millis>1717682432434</millis>
+  <nanos>100200</nanos>
   <sequence>0</sequence>
   <logger>server.Server</logger>
   <level>SEVERE</level>
@@ -14,9 +14,9 @@
   <message>Connection established</message>
 </record>
 <record>
-  <date>2024-05-29T14:13:51.741726300Z</date>
-  <millis>1716992031741</millis>
-  <nanos>726300</nanos>
+  <date>2024-06-06T14:00:32.470869400Z</date>
+  <millis>1717682432470</millis>
+  <nanos>869400</nanos>
   <sequence>1</sequence>
   <logger>server.Server</logger>
   <level>INFO</level>
@@ -26,9 +26,9 @@
   <message>Collection updated successfully!</message>
 </record>
 <record>
-  <date>2024-05-29T14:13:51.749939Z</date>
-  <millis>1716992031749</millis>
-  <nanos>939000</nanos>
+  <date>2024-06-06T14:00:32.480156500Z</date>
+  <millis>1717682432480</millis>
+  <nanos>156500</nanos>
   <sequence>2</sequence>
   <logger>server.Server</logger>
   <level>INFO</level>
@@ -38,9 +38,9 @@
   <message>Starting the server...</message>
 </record>
 <record>
-  <date>2024-05-29T14:13:51.752289500Z</date>
-  <millis>1716992031752</millis>
-  <nanos>289500</nanos>
+  <date>2024-06-06T14:00:32.484296700Z</date>
+  <millis>1717682432484</millis>
+  <nanos>296700</nanos>
   <sequence>3</sequence>
   <logger>server.Server</logger>
   <level>INFO</level>
@@ -50,9 +50,9 @@
   <message>Listening port '64532'...</message>
 </record>
 <record>
-  <date>2024-05-29T14:13:51.753789200Z</date>
-  <millis>1716992031753</millis>
-  <nanos>789200</nanos>
+  <date>2024-06-06T14:00:32.485300400Z</date>
+  <millis>1717682432485</millis>
+  <nanos>300400</nanos>
   <sequence>4</sequence>
   <logger>server.Server</logger>
   <level>INFO</level>
@@ -62,9 +62,9 @@
   <message>The server has been successfully started.</message>
 </record>
 <record>
-  <date>2024-05-29T14:13:59.189896300Z</date>
-  <millis>1716992039189</millis>
-  <nanos>896300</nanos>
+  <date>2024-06-06T14:00:38.704188700Z</date>
+  <millis>1717682438704</millis>
+  <nanos>188700</nanos>
   <sequence>5</sequence>
   <logger>server.Server</logger>
   <level>INFO</level>

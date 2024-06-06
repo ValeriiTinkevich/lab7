@@ -230,7 +230,7 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
 
     @Override
     public String toString() {
-        return String.format("Id: %d\nName: %s\nCoordinates: {x: %f y: %f}\nCreation Time: %s\nHealth: %d\nHeart count: %d\nHeight: %d\nMelee weapon: %s\nChapter: name: %s\n         world: %s",
+        return String.format("Id: %d\nName: %s\nCoordinates: {x: %f y: %f}\nCreation Time: %s\nHealth: %d\nHeart count: %d\nHeight: %d\nMelee weapon: %s\nChapter: name: %s\n         world: %s\n",
                 getId(),
                 getName(),
                 getCoordinates().getX(),
@@ -248,5 +248,13 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
     @Override
     public int compareTo(SpaceMarine o) {
         return (int) (this.height - o.height);
+    }
+
+    public int getCreatedByUser() {
+        return createdByUser;
+    }
+
+    public void setCreatedByUser(int createdByUser) {
+        this.createdByUser = createdByUser;
     }
 }

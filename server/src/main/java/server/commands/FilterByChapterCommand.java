@@ -5,6 +5,7 @@ import common.data.Chapter;
 import common.data.SpaceMarine;
 import common.data.User;
 import common.exceptions.NotAuthorizedException;
+import common.exceptions.UserNotFoundException;
 import common.exceptions.WrongAmountOfArgumentsException;
 import common.utility.Outputter;
 import server.databaseinteraction.DataBase;
@@ -12,6 +13,7 @@ import server.utility.CollectionManager;
 import server.utility.ResponseOutputter;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 /**
  * Shows filtered collection by chapter.
@@ -45,14 +47,15 @@ public class FilterByChapterCommand extends AbstractCommand{
             Chapter askedChapter = (Chapter) argument;
             for(SpaceMarine spaceMarine: collectionManager.getSpaceMarineCollection()) {
                 if (spaceMarine.getChapter().equals(askedChapter)) {
-                    ResponseOutputter.appendLn(spaceMarine + "\n===============");
+                    ResponseOutputter.appendLn(spaceMarine.toString() + "\nOwner: " +
+                            dataBase.selectUsername(spaceMarine.getCreatedByUser())+ "\n===============");
                 }
             }
             return true;
         } catch (WrongAmountOfArgumentsException e) {
             ResponseOutputter.appendError(e.getMessage());
             return false;
-        } catch (NotAuthorizedException e) {
+        } catch (NotAuthorizedException | SQLException | UserNotFoundException e) {
             ResponseOutputter.appendError(e.getMessage());
         }
         return false;

@@ -71,6 +71,38 @@ public class DataBase {
         }
     }
 
+    public int removeById(int id) throws SQLException, DataBaseNotUpdatedException {
+        String query = "delete from spacemarine where spacemarine_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, id);
+        try {
+            if(preparedStatement.execute()) {
+                return preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            System.out.print(e.getMessage());
+            throw new DataBaseNotUpdatedException("Error while deleting object");
+        }
+        throw new DataBaseNotUpdatedException("Id is invalid or couldn't delete the object");
+    }
+
+    public int removeByHeight(long height) throws SQLException, DataBaseNotUpdatedException {
+        String query = "delete from spacemarine where height > ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setLong(1, height);
+        try {
+            if(preparedStatement.execute()) {
+                return preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            System.out.print(e.getMessage());
+            throw new DataBaseNotUpdatedException("Error while deleting object");
+        }
+        throw new DataBaseNotUpdatedException("Id is invalid or couldn't delete the object");
+    }
+
+    //public int removeGreaterThan
+
     public int insert(Chapter chapter) throws SQLException, DataBaseNotUpdatedException {
         String query = "insert into chapter (chapter_name, world) values (?, ?) returning chapter_id";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -218,7 +250,6 @@ public class DataBase {
         updateCoordinates(id, spaceMarine.getCoordinates());
         String name = spaceMarine.getName();
         String meleeweapon = spaceMarine.getMeleeWeapon().toString();
-        String datetime = String.valueOf(Timestamp.valueOf(ZonedDateTime.now().toLocalDateTime()));
         String query = "update spacemarine set name='" + name +"', " +
                 "health=?, heartcount=?, height=?, meleeweapon='" + meleeweapon +"' where spacemarine_id=?";
         ResponseOutputter.appendLn(query);
@@ -266,6 +297,18 @@ public class DataBase {
     }
 
 
+    public String selectUsername(int id) throws SQLException, UserNotFoundException {
+        String query = "select username from users where id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, id);
+        if(preparedStatement.execute()) {
+            ResultSet rs = preparedStatement.getResultSet();
+            if(rs.next()) {
+                return rs.getString("username");
+            }
+        }
+        throw new UserNotFoundException("No owner with id = " + id);
+    }
 
 
     public LinkedList<SpaceMarine> selectCollection() throws SQLException, DataBaseNotUpdatedException {
@@ -305,4 +348,6 @@ public class DataBase {
         }
         throw new DataBaseNotUpdatedException("Error while updating collection");
     }
+
+
 }

@@ -13,12 +13,18 @@ import java.util.logging.Logger;
 
 public class App {
 
-    public static final int PORT = 64532;
+    public static int DEFAULTPORT = 64532;
+    public static int PORT;
     public static final int connectionTimeout = 60 * 1000;
     public static final Logger logger = Logger.getLogger(Server.class.getName());
 
 
     public static void main(String[] args) throws IOException, SQLException, DataBaseNotUpdatedException {
+        if (args.length > 0) {
+            PORT = Integer.parseInt(args[0]);
+        } else {
+            PORT = DEFAULTPORT;
+        }
         FileHandler fh;
         fh = new FileHandler("server.log");
         logger.addHandler(fh);

@@ -7,7 +7,9 @@ import server.App;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Collection manager.
@@ -15,7 +17,8 @@ import java.util.LinkedList;
  * Elements are of class Space marine
  */
 public class CollectionManager {
-    public LinkedList<SpaceMarine> spaceMarineCollection;
+    public List<SpaceMarine> list = new LinkedList<>();
+    public List<SpaceMarine> spaceMarineCollection;
     private LocalDateTime lastInitTime;
     private LocalDateTime lastSaveTime;
     private final ZonedDateTime creationDate;
@@ -27,7 +30,7 @@ public class CollectionManager {
     public CollectionManager() {
         this.lastInitTime = null;
         this.lastSaveTime = null;
-        spaceMarineCollection = new LinkedList<>();
+        spaceMarineCollection =Collections.synchronizedList(list);
         creationDate = ZonedDateTime.now();
     }
 
@@ -43,7 +46,7 @@ public class CollectionManager {
      * Get collection.
      * @return Linked list of space marines.
      */
-    public LinkedList<SpaceMarine> getSpaceMarineCollection() {
+    public List<SpaceMarine> getSpaceMarineCollection() {
         return spaceMarineCollection;
     }
 

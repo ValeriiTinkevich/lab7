@@ -4,14 +4,17 @@ package server.commands;
 
 import common.data.SpaceMarine;
 import common.data.User;
+import common.exceptions.DataBaseNotUpdatedException;
 import common.exceptions.IncorrectInputInScriptException;
 import common.exceptions.NotAuthorizedException;
 import common.exceptions.WrongAmountOfArgumentsException;
 import common.utility.Outputter;
+import server.databaseinteraction.DataBase;
 import server.utility.CollectionManager;
 import server.utility.ResponseOutputter;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -19,14 +22,16 @@ import java.util.ArrayList;
  */
 public class RemoveGreaterCommand extends AbstractCommand{
     CollectionManager collectionManager;
+    DataBase dataBase;
 
     /**
      * Remove_greater command constructor.
      * @param collectionManager Collection manager for remove_greater command.
      */
-    public RemoveGreaterCommand(CollectionManager collectionManager) {
+    public RemoveGreaterCommand(CollectionManager collectionManager, DataBase dataBase) {
         super("remove_greater", "removes all elements greater than input");
         this.collectionManager  = collectionManager;
+        this.dataBase = dataBase;
     }
     /**
      * Removes all elements greater than inputted.
@@ -38,22 +43,14 @@ public class RemoveGreaterCommand extends AbstractCommand{
         try {
             if (user == -1) throw new NotAuthorizedException();
             if(!(argument instanceof SpaceMarine || argument == null)) throw new WrongAmountOfArgumentsException();
-            int counter = 0;
             SpaceMarine greaterSpaceMarine = (SpaceMarine) argument;
-            ArrayList<SpaceMarine> tempList = new ArrayList<>();
-            for (SpaceMarine spaceMarine: collectionManager.getSpaceMarineCollection()) {
-                if(spaceMarine.compareTo(greaterSpaceMarine) > 0) {
-                    tempList.add(spaceMarine);
-                    counter++;
-                }
-            }
-            collectionManager.getSpaceMarineCollection().removeAll(tempList);
-            ResponseOutputter.appendLn("Removed "+ counter + " Space marines" );
-            return true;
+            long height = greaterSpaceMarine.getHeight();
+            ResponseOutputter.appendLn("Deleted " + dataBase.removeByHeight(height) + " rows");
+            collectionManager.updateCollection(dataBase.selectCollection());
         } catch (WrongAmountOfArgumentsException e) {
             ResponseOutputter.appendError(e.getMessage());
             return false;
-        } catch (NotAuthorizedException e) {
+        } catch (NotAuthorizedException | SQLException | DataBaseNotUpdatedException e) {
             ResponseOutputter.appendError(e.getMessage());
         }
         return false;

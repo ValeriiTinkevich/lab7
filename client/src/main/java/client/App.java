@@ -39,9 +39,7 @@ public class App {
 
 
     public static void main(String[] args) throws InterruptedException {
-        //if (!initializeConnectionAddress(args)) return;
-        host = "localhost";
-        port = 64532;
+        if (!initializeConnectionAddress(args)) return;
         Scanner userScanner = new Scanner(System.in);
         UserHandler userHandler = new UserHandler(userScanner);
         Client client = new Client(userHandler, port, MAX_RECONNECTION_ATTEMPTS, host);
