@@ -8,14 +8,13 @@ import java.util.*;
 public class CommandManager {
     public static final Map<String, ICommand> commands = new HashMap<>();
     CollectionManager collectionManager;
-    private final int COMMAND_HISTORY_SIZE = 8;
     private DataBase dataBase;
 
     private static LinkedList<String> commandHistory;
 
 
     public CommandManager (CollectionManager collectionManager, DataBase dataBase) {
-        commandHistory = new LinkedList<String>();
+        commandHistory = new LinkedList<>();
         this.collectionManager = collectionManager;
         this.dataBase = dataBase;
     }

@@ -1,6 +1,5 @@
 package server.commands;
 
-import common.data.SpaceMarine;
 import common.data.User;
 import common.exceptions.DataBaseNotUpdatedException;
 import common.exceptions.WrongAmountOfArgumentsException;

@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class App {
     public static final String PS1 = "$ ";
-    public static final String PS2 = "> ";
+
     private static final int MAX_RECONNECTION_ATTEMPTS = 6;
     private static String host;
     private static int port;

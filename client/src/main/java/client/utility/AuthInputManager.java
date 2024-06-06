@@ -36,7 +36,7 @@ public class AuthInputManager {
             try {
                 username = userScanner.nextLine().trim();
                 if (scriptMode) Outputter.printLn(username);
-                if (username.equals("")) throw new EmptyArgumentException();
+                if (username.isEmpty()) throw new EmptyArgumentException();
                 if (username.length() < 4) throw new NotInDeclaredLimitsException();
                 break;
             } catch (EmptyArgumentException e) {
@@ -135,8 +135,7 @@ public class AuthInputManager {
                     char[] passwordArray = systemConsole.readPassword("Enter your password: ");
                     if(passwordArray.length == 0) throw new EmptyArgumentException();
                     if (passwordArray.length < 6) throw new NotInDeclaredLimitsException();
-                    String password = new String(passwordArray);
-                    return password;
+                    return new String(passwordArray);
                 } catch (EmptyArgumentException e) {
                     Outputter.printError("Password can't be empty");
                 } catch (NotInDeclaredLimitsException e) {

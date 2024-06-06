@@ -1,11 +1,8 @@
 package server.commands;
 
-import common.data.SpaceMarine;
 import common.data.User;
-import common.exceptions.NotAuthorizedException;
 import common.exceptions.UserNotFoundException;
 import common.exceptions.WrongAmountOfArgumentsException;
-import server.Server;
 import server.databaseinteraction.DataBase;
 import server.utility.ResponseOutputter;
 

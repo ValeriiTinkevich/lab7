@@ -1,7 +1,5 @@
 package server.commands;
 
-import common.data.User;
-
 import java.io.Serializable;
 
 /**
@@ -9,7 +7,6 @@ import java.io.Serializable;
  */
 
 public interface ICommand {
-    String getDescription();
 
     String getName();
 

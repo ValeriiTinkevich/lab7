@@ -1,9 +1,7 @@
 package server.commands;
 
 
-import common.data.User;
 import common.exceptions.WrongAmountOfArgumentsException;
-import common.utility.Outputter;
 import server.utility.ResponseOutputter;
 
 import java.io.Serializable;

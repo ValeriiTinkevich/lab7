@@ -55,7 +55,7 @@ public class RequestHandler implements Runnable {
     public void run() {
         try (
                 ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-                ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+                ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream())
         ) {
             while (!socket.isClosed()) {
                 try {

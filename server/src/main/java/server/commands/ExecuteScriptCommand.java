@@ -1,8 +1,6 @@
 package server.commands;
 
 
-
-import common.data.User;
 import common.exceptions.NotAuthorizedException;
 import common.exceptions.WrongAmountOfArgumentsException;
 import server.utility.ResponseOutputter;

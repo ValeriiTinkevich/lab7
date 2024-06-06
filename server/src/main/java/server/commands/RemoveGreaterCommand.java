@@ -1,21 +1,16 @@
 package server.commands;
 
 
-
 import common.data.SpaceMarine;
-import common.data.User;
 import common.exceptions.DataBaseNotUpdatedException;
-import common.exceptions.IncorrectInputInScriptException;
 import common.exceptions.NotAuthorizedException;
 import common.exceptions.WrongAmountOfArgumentsException;
-import common.utility.Outputter;
 import server.databaseinteraction.DataBase;
 import server.utility.CollectionManager;
 import server.utility.ResponseOutputter;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 /**
  * Command that removes all elements greater than inputted.

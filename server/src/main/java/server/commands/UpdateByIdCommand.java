@@ -2,9 +2,7 @@ package server.commands;
 
 
 import common.data.SpaceMarine;
-import common.data.User;
 import common.exceptions.*;
-import common.utility.Outputter;
 import server.databaseinteraction.DataBase;
 import server.utility.CollectionManager;
 import server.utility.ResponseOutputter;
